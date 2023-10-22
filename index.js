@@ -10,8 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hxpxamt.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hxpxamt.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -28,19 +27,27 @@ async function run() {
 
     const menuCollection = client.db("tasty-tryst").collection("menu");
     const reviewsCollection = client.db("tasty-tryst").collection("reviews");
-    
+    const cartsCollection = client.db("tasty-tryst").collection("carts");
 
+    app.get("/menu", async (req, res) => {
+      const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
 
-    app.get("/menu", async(req, res) => {
-  const result = await menuCollection.find().toArray()
-  res.send(result);
-})
-
-
-    app.get('/reviews', async (req, res) => {
+    app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
       res.send(result);
-});
+    });
+
+
+
+
+    // carts collection
+    app.post('/carts', async(req, res) => {
+      const item = req.body;
+      const result = await cartsCollection.insertOne(item);
+      res.send(result);
+    })
 
 
 
@@ -58,8 +65,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
 
 app.get("/", (req, res) => {
   res.send("Tasty Tryst server is running");
