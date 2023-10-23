@@ -39,21 +39,31 @@ async function run() {
       res.send(result);
     });
 
-
-
-
     // carts collection
-    app.post('/carts', async(req, res) => {
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      console.log(email);
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await cartsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.post("/carts", async (req, res) => {
       const item = req.body;
       const result = await cartsCollection.insertOne(item);
       res.send(result);
-    })
+    });
 
+    app.get("/", (req, res) => {
+      res.send("Tasty Tryst server is running");
+    });
 
-
-
-
-
+    app.listen(port, () => {
+      console.log(`Server is Running on Port ${port}`);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -65,11 +75,3 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-app.get("/", (req, res) => {
-  res.send("Tasty Tryst server is running");
-});
-
-app.listen(port, () => {
-  console.log(`Server is Running on Port ${port}`);
-});
