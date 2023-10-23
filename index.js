@@ -30,12 +30,16 @@ async function run() {
 
     app.post("/users", async (req, res) => {
       const user = req.body;
+      const query = { email: user.email };
+      const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: "User already exists" });
+      }
       const result = await usersCollection.insertOne(user);
       res.send(result);
-})
+    });
 
-
-// for menu
+    // for menu
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
