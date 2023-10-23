@@ -29,6 +29,14 @@ async function run() {
     const reviewsCollection = client.db("tasty-tryst").collection("reviews");
     const cartsCollection = client.db("tasty-tryst").collection("carts");
 
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.SECRET_TOKEN, {
+        expiresIn: "1h",
+      });
+      res.send({token});
+    });
+
     // users Api
     app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
