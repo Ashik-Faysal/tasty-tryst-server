@@ -24,9 +24,18 @@ async function run() {
     await client.connect();
 
     const menuCollection = client.db("tasty-tryst").collection("menu");
+    const usersCollection = client.db("tasty-tryst").collection("users");
     const reviewsCollection = client.db("tasty-tryst").collection("reviews");
     const cartsCollection = client.db("tasty-tryst").collection("carts");
 
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+})
+
+
+// for menu
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result);
@@ -37,6 +46,7 @@ async function run() {
       res.send(result);
     });
 
+    // cart api
     app.get("/carts", async (req, res) => {
       const email = req.query.email;
       if (!email) {
